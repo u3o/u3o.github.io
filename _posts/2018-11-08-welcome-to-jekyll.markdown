@@ -1,25 +1,50 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
-date:   2018-11-08 13:09:35 +0200
-categories: jekyll update
+title:  "Item batch update."
+date:   2018-11-06 13:03:16 +0200
+categories:
 ---
-You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
+  Let's assume situation that we need to do update a lot of items during one http request.
+But if there is no such item in a table we need to create it. With postgres help we can do it very simple.
+For this we use postgres construction "ON CONFLICT .. DO UPDATE". That means if we already have in our table
+item with the same name we update description column value for it in other case we create new item.
+  Also we use batchUpdate method from JdbcTemplate class for doing batch update a lot of items together.
+Below you can see example of this implementation:
 
-To add new posts, simply add a file in the `_posts` directory that follows the convention `YYYY-MM-DD-name-of-post.ext` and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.
+{% highlight java %}
+@Service
+public class ItemBatchUpdateService {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-Jekyll also offers powerful support for code snippets:
+    private static final String QUERY = "INSERT INTO public.item\n" +
+            "(name, description)\n" +
+            "VALUES(?, ?)\n" +
+            "ON CONFLICT (name) \n" +
+            "DO\n" +
+            " UPDATE\n" +
+            "   SET description = ?;";
 
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
+    public void insertOrUpdate(List<Item> items) {
+        jdbcTemplate.batchUpdate(QUERY,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(Item item, int i) throws SQLException {
+                        ps.setString(1, item.get(i).getName());
+                        ps.setString(2, item.get(i).getDescription());
+                        ps.setString(3, item.get(i).getDescription());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return items.size();
+                    }
+                });
+    }
+}
 {% endhighlight %}
 
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
+Check out the [Postgres docs][postgres-docs] for more info and [Spring docs][spring-docs]
 
-[jekyll-docs]: https://jekyllrb.com/docs/home
-[jekyll-gh]:   https://github.com/jekyll/jekyll
-[jekyll-talk]: https://talk.jekyllrb.com/
+[postgres-docs]: https://www.postgresql.org/docs/9.5/sql-insert.html
+[spring-docs]:   https://docs.spring.io/spring/docs/3.0.0.M4/reference/html/ch12s04.html
