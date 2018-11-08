@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Item batch update."
+title:  "Item batch update"
 date:   2018-11-06 13:03:16 +0200
 categories:
 ---
@@ -44,7 +44,7 @@ public class ItemBatchUpdateService {
 }
 {% endhighlight %}
 
-Check out the [Postgres docs][postgres-docs] for more info and [Spring docs][spring-docs]
+Check out the [Postgres docs][postgres-docs] and [Spring docs][spring-docs] for more info.
 
 [postgres-docs]: https://www.postgresql.org/docs/9.5/sql-insert.html
 [spring-docs]:   https://docs.spring.io/spring/docs/3.0.0.M4/reference/html/ch12s04.html
