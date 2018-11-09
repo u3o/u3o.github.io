@@ -29,10 +29,10 @@ public class ItemBatchUpdateService {
         jdbcTemplate.batchUpdate(QUERY,
                 new BatchPreparedStatementSetter() {
                     @Override
-                    public void setValues(Item item, int i) throws SQLException {
-                        ps.setString(1, item.get(i).getName());
-                        ps.setString(2, item.get(i).getDescription());
-                        ps.setString(3, item.get(i).getDescription());
+                   public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setString(1, items.get(i).getName());
+                        ps.setString(2, items.get(i).getDescription());
+                        ps.setString(3, items.get(i).getDescription());
                     }
 
                     @Override
