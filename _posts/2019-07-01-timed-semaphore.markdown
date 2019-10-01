@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Timed semaphore"
-date:   2019-10-01 11:00:00
+title:  "Implement custom timed semaphore"
+date:   2019-07-01 10:03:16 +0200
 categories:
 ---
  

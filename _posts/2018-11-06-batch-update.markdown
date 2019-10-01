@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Item batch update"
-date:   2018-11-06 13:03:16 +0200
+date:   2019-06-06 13:03:16 +0200
 categories:
 ---
   Let's assume situation that we need to do update a lot of items during one http request.
