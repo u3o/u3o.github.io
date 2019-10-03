@@ -7,7 +7,7 @@ categories:
  
 
 {% highlight java %}
-package com.agspace.weather.component;
+package com.company.component;
  
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
