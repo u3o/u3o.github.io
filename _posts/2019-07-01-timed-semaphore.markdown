@@ -71,7 +71,35 @@ public class CustomTimedSemaphore extends Semaphore {
 }
 {% endhighlight %}
 
-Check out the [Postgres docs][postgres-docs] and [Spring docs][spring-docs] for more info.
+{% highlight java %}
+package com.company.component;
 
-[postgres-docs]: https://www.postgresql.org/docs/9.5/sql-insert.html
-[spring-docs]:   https://docs.spring.io/spring/docs/3.0.0.M4/reference/html/ch12s04.html
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class RateLimitExecutor extends ThreadPoolExecutor {
+    private final CustomTimedSemaphore semaphore;
+
+    public RateLimitExecutor(int poolSize, int maxRate, int period) {
+        super(poolSize, poolSize, 0, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
+        this.semaphore = new CustomTimedSemaphore(maxRate, period);
+    }
+
+    @Override
+    public <T> Future<T> submit(Callable<T> task) {
+        semaphore.acquire();
+        return super.submit(task);
+    }
+
+    public int getPermits() {
+        return semaphore.availablePermits();
+    }
+}
+
+{% endhighlight %}
